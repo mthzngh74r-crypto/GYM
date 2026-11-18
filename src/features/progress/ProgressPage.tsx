@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { db } from '../../db/schema';
+import { CHART } from '../../components/chartTheme';
 import { Badge, Card, Chip, Empty, PageHeader, Section, inputCls } from '../../components/ui';
 import { useSettings } from '../../hooks/useSettings';
 import { addDaysISO, formatRu, todayISO } from '../../domain/dates';
@@ -23,13 +24,6 @@ import type { Units } from '../../domain/types';
 
 type Period = 'week' | 'cycle' | 'month';
 const PERIOD_LABEL: Record<Period, string> = { week: '7 дней', cycle: 'Текущий цикл', month: '28 дней' };
-
-export const CHART = {
-  series: '#4ade80',
-  grid: '#2a3142',
-  axis: '#8b93a7',
-  tooltipBg: '#1c2230',
-};
 
 export function ProgressPage() {
   const settings = useSettings();
@@ -253,6 +247,7 @@ function E1RMSection({
 
   return (
     <>
+      <div id="e1rm" className="scroll-mt-16" />
       <Section title="Расчётный 1ПМ (Эпли)">
         <Card className="space-y-3">
           <select className={inputCls} value={selected} onChange={(e) => setExId(e.target.value)}>
@@ -311,7 +306,7 @@ function E1RMSection({
       <Section title="Личные рекорды">
         <div className="rounded-2xl border border-line overflow-hidden divide-y divide-line">
           {(showAll ? options : [...options].sort((a, b) => (a.rec.bestE1RMDate < b.rec.bestE1RMDate ? 1 : -1)).slice(0, 8)).map((o) => (
-            <button key={o.id} onClick={() => { setExId(o.id); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-full bg-surface px-4 py-3 text-left active:bg-surface-2 flex gap-3 items-center">
+            <button key={o.id} onClick={() => { setExId(o.id); document.getElementById('e1rm')?.scrollIntoView({ behavior: 'smooth' }); }} className="w-full bg-surface px-4 py-3 text-left active:bg-surface-2 flex gap-3 items-center">
               <span className="flex-1 min-w-0">
                 <span className="block truncate">{o.name}</span>
                 <span className="block text-xs text-muted">
