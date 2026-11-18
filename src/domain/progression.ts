@@ -43,30 +43,24 @@ export function hitTopOfRange(s: Session, repMax: number): boolean {
 }
 
 /**
- * Сколько последних тренировок подряд нет прогресса (не побит лучший e1RM
- * среди всех предыдущих сессий и не выросли суммарные повторения с тем же весом).
+ * Сколько последних тренировок подряд нет прогресса: не побит лучший e1RM
+ * и не побит рекорд суммарных повторений с тем же рабочим весом.
  */
 export function sessionsWithoutProgress(sessionsNewestFirst: Session[]): number {
   const chron = [...sessionsNewestFirst].reverse();
   let streak = 0;
-  let best = 0;
-  let prev: Session | null = null;
-  for (const s of chron) {
+  let bestE1RM = 0;
+  const bestRepsAtWeight = new Map<number, number>();
+  chron.forEach((s, i) => {
     const e = sessionBestE1RM(s);
-    const repsUp =
-      prev !== null &&
-      sessionWorkingWeight(s) === sessionWorkingWeight(prev) &&
-      s.sets.reduce((a, x) => a + x.reps, 0) > prev.sets.reduce((a, x) => a + x.reps, 0);
-    if (prev === null) {
-      best = e;
-    } else if (e > best + 1e-9 || repsUp) {
-      streak = 0;
-      best = Math.max(best, e);
-    } else {
-      streak++;
-    }
-    prev = s;
-  }
+    const w = sessionWorkingWeight(s);
+    const reps = s.sets.filter((x) => x.weight >= w).reduce((a, x) => a + x.reps, 0);
+    const prevReps = bestRepsAtWeight.get(w);
+    const progressed = i === 0 || e > bestE1RM + 1e-9 || (prevReps !== undefined && reps > prevReps);
+    streak = progressed ? 0 : streak + 1;
+    bestE1RM = Math.max(bestE1RM, e);
+    bestRepsAtWeight.set(w, Math.max(prevReps ?? 0, reps));
+  });
   return streak;
 }
 
