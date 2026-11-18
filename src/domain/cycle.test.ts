@@ -108,3 +108,12 @@ describe('schedule', () => {
     expect(pickCurrentWorkout([w('2026-01-05', 3, 'planned')], '2026-01-02')?.cycleDayOrder).toBe(3);
   });
 });
+
+import { currentCycleStart } from './cycle';
+describe('currentCycleStart', () => {
+  it('последний выполненный день 1', () => {
+    const ws = [w('2026-01-01', 1), w('2026-01-07', 1), w('2026-01-08', 2), w('2026-01-14', 1, 'planned')];
+    expect(currentCycleStart(SEED_CYCLE, ws, '2026-01-10')).toBe('2026-01-07');
+    expect(currentCycleStart(SEED_CYCLE, [], '2026-01-10')).toBeNull();
+  });
+});

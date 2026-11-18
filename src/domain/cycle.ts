@@ -111,3 +111,14 @@ export function completedCycles(days: CycleDay[], workouts: Workout[]): number {
   }
   return cycles;
 }
+
+/** Дата начала текущего цикла: последний выполненный первый тренировочный день не позже `today`. */
+export function currentCycleStart(days: CycleDay[], workouts: Workout[], today: string): string | null {
+  const first = sortDays(days).find((d) => !d.isRest);
+  if (!first) return null;
+  const starts = workouts
+    .filter((w) => (w.cycleDayId === first.id || w.cycleDayOrder === first.order) && w.date <= today && (w.status === 'done' || w.status === 'in_progress'))
+    .map((w) => w.date)
+    .sort();
+  return starts.at(-1) ?? null;
+}

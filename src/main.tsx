@@ -19,3 +19,7 @@ createRoot(document.getElementById('root')!).render(
     </HashRouter>
   </StrictMode>,
 );
+
+if (import.meta.env.DEV) {
+  void import('./db/schema').then(({ db }) => ((window as unknown as { __db: unknown }).__db = db));
+}

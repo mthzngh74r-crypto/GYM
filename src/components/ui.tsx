@@ -137,5 +137,5 @@ export function Badge({ children, tone = 'muted' }: { children: ReactNode; tone?
     danger: 'bg-danger/15 text-danger',
     info: 'bg-info/15 text-info',
   }[tone];
-  return <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${cls}`}>{children}</span>;
+  return <span className={`inline-flex items-center whitespace-nowrap rounded-md px-2 py-0.5 text-xs font-medium ${cls}`}>{children}</span>;
 }
