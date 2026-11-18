@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Button } from '../../components/ui';
 import { useSettings } from '../../hooks/useSettings';
-import { checkApiKey } from '../../ai/generate';
 
 export function ApiKeyCheck() {
   const s = useSettings();
@@ -14,6 +13,7 @@ export function ApiKeyCheck() {
         onClick={async () => {
           setState({ busy: true });
           try {
+            const { checkApiKey } = await import('../../ai/generate');
             setState({ busy: false, ok: true, msg: await checkApiKey(s) });
           } catch (e) {
             setState({ busy: false, ok: false, msg: e instanceof Error ? e.message : String(e) });

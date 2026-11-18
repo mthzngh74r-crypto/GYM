@@ -8,6 +8,7 @@ const base = process.env.BASE_PATH ?? '/';
 
 export default defineConfig({
   base,
+  build: { chunkSizeWarningLimit: 700 },
   plugins: [
     react(),
     tailwindcss(),

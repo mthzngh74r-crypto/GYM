@@ -5,7 +5,10 @@ import { loadContextInput } from './load';
 import { alternativeByRules, generateByRules, orderCompoundsFirst } from './rules';
 import type { GenerationPlan, PlanItem } from './types';
 import type { Generation } from '../domain/types';
-import { aiAvailability, generateWithAI, alternativeWithAI } from '../ai/generate';
+import { aiAvailability } from '../ai/availability';
+
+// SDK Anthropic подгружается только когда нужен ИИ
+const loadAi = () => import('../ai/generate');
 
 export interface GenerateResult {
   source: 'ai' | 'rules';
@@ -24,6 +27,7 @@ export async function generateForWorkout(workoutId: string): Promise<GenerateRes
   const avail = aiAvailability(input.settings);
   if (avail.ok) {
     try {
+      const { generateWithAI } = await loadAi();
       plan = await generateWithAI(ctx, input.exercises, input.settings);
       source = 'ai';
     } catch (e) {
@@ -79,6 +83,7 @@ export async function suggestAlternative(weId: string): Promise<void> {
   let item: PlanItem | null = null;
   if (aiAvailability(input.settings).ok) {
     try {
+      const { alternativeWithAI } = await loadAi();
       const r = await alternativeWithAI(ctx, input.exercises, input.settings, we, current);
       if (r.newExercise) await db.exercises.put(r.newExercise);
       item = r.item;
